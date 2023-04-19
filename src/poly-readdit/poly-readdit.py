@@ -28,7 +28,7 @@ class PolyReaddit:
     user_name = ""
     user_karma = ""
     reddit_access_token = ""
-    polygon_address = ""
+    polygon_address = "N/A"
 
     def print_banner(self):
         print(
@@ -136,7 +136,7 @@ class PolyReaddit:
                 nft["title"] = i["node"]["item"]["nft"]["title"]
                 nft["externalUrls"] = i["node"]["item"]["nft"]["externalUrls"][0]
                 self.nfts.append(nft)
-                if self.polygon_address == "":
+                if self.polygon_address == "N/A" and len(self.nfts) > 0:
                     self.get_token_owner(i["node"]["item"]["nft"]["externalUrls"][0])
         except:
             print(" [-] Error getting NFT")
@@ -144,19 +144,20 @@ class PolyReaddit:
     def print_data(self):
         print("")
         print(" [+] REDDIT USER INFO")
-        print(" [|] Username: {}".format(self.username))
-        print(" [|] Created UTC: {}".format(self.created_str))
-        print(" [|] User ID: {}".format(self.user_id))
-        print(" [|] Is mod: {}".format(self.is_mod))
-        print(" [|] Is NSFW: {}".format(self.is_NSFW))
-        print(" [|] Is Gold: {}".format(self.is_Gold))
-        print(" [|] Is Employee: {}".format(self.is_Employee))
-        print(" [|] Is Suspended: {}".format(self.is_Suspended))
-        print(" [|] Hide from robots: {}".format(self.hide_from_robots))
-        print(" [|] Profile ID: {}".format(self.profile_id))
-        print(" [|] User name: {}".format(self.user_name))
+        print("  |")
+        print("  ├ Username: {}".format(self.username))
+        print("  ├ Created UTC: {}".format(self.created_str))
+        print("  ├ User ID: {}".format(self.user_id))
+        print("  ├ Is mod: {}".format(self.is_mod))
+        print("  ├ Is NSFW: {}".format(self.is_NSFW))
+        print("  ├ Is Gold: {}".format(self.is_Gold))
+        print("  ├ Is Employee: {}".format(self.is_Employee))
+        print("  ├ Is Suspended: {}".format(self.is_Suspended))
+        print("  ├ Hide from robots: {}".format(self.hide_from_robots))
+        print("  ├ Profile ID: {}".format(self.profile_id))
+        print("  ├ User name: {}".format(self.user_name))
         print(
-            " [|] User karma: {} ({}: Awards received, {}: Awards given, {}: Comments, {}: Posts)".format(
+            "  ├ User karma: {} ({}: Awards received, {}: Awards given, {}: Comments, {}: Posts)".format(
                 self.user_karma,
                 self.user_karma_award_rec,
                 self.user_karma_award_given,
@@ -164,17 +165,26 @@ class PolyReaddit:
                 self.user_karma_post,
             )
         )
-        print(" [|] Polygon Address: {}".format(self.polygon_address))
+        print("  ├ Polygon Address: {}".format(self.polygon_address))
+        print("  └ ------------------------------------")
         print("")
 
-        print(" [+] NFT INFO")
-        for i in self.nfts:
-            print(" [|] Name: {}".format(i["name"]))
-            print(" [|] ID: {}".format(i["id"]))
-            print(" [|] Serial Number: {}".format(i["serialNumber"]))
-            print(" [|] Title: {}".format(i["title"]))
-            print(" [|] External Urls: {}".format(i["externalUrls"]))
+        if self.polygon_address != "N/A":
+            print(" [+] NFT INFO")
+            print("  |")
+            for i in self.nfts:
+                print("  ├ Name: {}".format(i["name"]))
+                print("  ├ ID: {}".format(i["id"]))
+                print("  ├ Serial Number: {}".format(i["serialNumber"]))
+                print("  ├ Title: {}".format(i["title"]))
+                print("  ├ External Urls: {}".format(i["externalUrls"]))
+                print("  └ ------------------------------------")
+                print("")
+        else:
+            print(" [-] No NFT INFO")
             print("")
+
+
 
     def get_token_owner(self, url):
         try:
@@ -193,10 +203,12 @@ class PolyReaddit:
         except:
             print(" [-] Error getting token owner")
 
-
-if __name__ == "__main__":
+def run():
     parser = argparse.ArgumentParser()
     parser.add_argument("-username", help="reddit username")
     args = parser.parse_args()
     poly = PolyReaddit(args.username)
     poly.print_data()
+
+if __name__ == "__main__":
+    run()
