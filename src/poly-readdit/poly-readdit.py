@@ -8,7 +8,7 @@ from datetime import datetime
 class PolyReaddit:
 
     start_headers = {
-        "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+        "Accept-Language": "us-US,us;q=0.8,en-US;q=0.5,en;q=0.3",
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0",
     }
     session = None
