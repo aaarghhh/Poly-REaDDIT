@@ -29,7 +29,7 @@ $ python ./poly-readdit/poly-readdit.py -username xxxxxx
 ```
 Or if you installed via pip directly with:
 ```
-$ poly-readdit -username xxxxxx
+$ polyreaddit -username xxxxxx
 ```
 ## Example
 ```
