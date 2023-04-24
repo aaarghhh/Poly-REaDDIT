@@ -29,6 +29,7 @@ class PolyReaddit:
     user_karma = ""
     reddit_access_token = ""
     polygon_address = "N/A"
+    user_messages = []
 
     def print_banner(self):
         print(
@@ -103,10 +104,72 @@ class PolyReaddit:
                 "karma"
             ]["fromPosts"]
             self.reddit_access_token = body_data["user"]["session"]["accessToken"]
-
+            self.retrieve_messages(body_data)
         except:
             print(" [-] Error getting user info")
             return False
+
+    @staticmethod
+    def get_last_timestamp(json_data, kind):
+        if len(json_data[kind].keys()) > 0:
+            return int(
+                        json_data[kind][list(json_data[kind].keys())[len(json_data[kind].keys()) - 1]][
+                            "created"])
+        return 0
+
+
+    def retrieve_messages(self, body_data):
+        posts = True
+        comments = True
+        first_key = ""
+        last_created = 0
+        while True:
+            if first_key == "":
+                url = "https://gateway.reddit.com/desktopapi/v1/user/{}/conversations?rtj=only&redditWebClient=web2x&app=web2x-client-production&allow_over18=1&include=identity&dist=25&sort=new&t=all".format(
+                    self.username)
+            else:
+                url = "https://gateway.reddit.com/desktopapi/v1/user/{}/conversations?rtj=only&redditWebClient=web2x&app=web2x-client-production&allow_over18=1&include=identity&after={}&dist=25&sort=new&t=all".format(
+                    self.username, first_key)
+            self.session_api = requests.Session()
+            _head = self.start_headers
+            _head["Authorization"] = "Bearer " + self.reddit_access_token.replace(
+                "'", ""
+            )
+            preview_message = self.session_api.get(url, headers=_head).text
+            json_message = json.loads(preview_message)
+
+            if comments:
+                for key in json_message["comments"].keys():
+                    created = int(json_message["comments"][key]["created"])
+                    message = { "created":created, "key": key, "permalink": json_message["comments"][key]["permalink"], "media": json_message["comments"][key]["media"] }
+                    self.user_messages.append(message)
+                if len(json_message["comments"].keys())>0:
+                    timestamp_comment_created = PolyReaddit.get_last_timestamp(json_message, "comments")
+                    if timestamp_comment_created > last_created:
+                        last_created = timestamp_comment_created
+                        first_key = list(json_message["comments"].keys())[len(json_message["comments"].keys()) - 1]
+
+            if posts:
+                for key in json_message["posts"].keys():
+                    created = int(json_message["posts"][key]["created"])
+                    message = { "created":created, "key": key, "permalink": json_message["posts"][key]["permalink"],
+                               "media": json_message["posts"][key]["media"]}
+                    self.user_messages.append(message)
+                if len(json_message["posts"].keys())>0:
+                    timestamp_post_created = PolyReaddit.get_last_timestamp(json_message, "posts")
+                    if timestamp_post_created > last_created:
+                        last_created = timestamp_post_created
+                        first_key = list(json_message["posts"].keys())[len(json_message["posts"].keys()) - 1]
+
+            if len(json_message["comments"].keys()) < 25:
+                comments = False
+            if len(json_message["posts"].keys()) < 25:
+                posts = False
+
+            if not posts and not comments:
+                break
+        print(" [+] Messages retrieved")
+
 
     def get_NFT(self):
         try:
