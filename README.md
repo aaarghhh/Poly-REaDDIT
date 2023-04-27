@@ -1,5 +1,5 @@
 # Poly-REaDDIT
-## A tool for gathering information and Polygon address NFT details about any Reddit users.
+## A tool for gathering information, Polygon address and NFT details about any Reddit users.
 Since last year Reddit introduced a way to costumize your profile with NFTs. This tool is a way to gather information, its NFTs and the Polygon address of any Reddit user.
 
 <div align="center">
